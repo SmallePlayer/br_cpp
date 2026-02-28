@@ -1,0 +1,61 @@
+# Compiled object files
+*.o
+*.obj
+
+# Compiled dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled static libraries
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+main
+
+# Debug files
+*.dSYM/
+*.su
+*.gch
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Visual Studio
+.vs/
+*.VC.db
+*.VC.VC.opendb
+
+# Xcode
+*.xcodeproj/
+*.xcworkspace/
+build/
+
+# CMake
+CMakeFiles/
+cmake_install.cmake
+CMakeCache.txt
+Makefile
+
+# Dependencies
+lib/
+bin/
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
