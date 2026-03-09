@@ -2,8 +2,10 @@ cmake_minimum_required(VERSION 3.10)
 project(br_cpp)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(OpenCV REQUIRED)
+find_package(Threads REQUIRED) 
 
 include_directories(include)
 include_directories(${OpenCV_INCLUDE_DIRS})
@@ -21,3 +23,12 @@ add_executable(tcp_server
 add_executable(tcp_client
     network/tcp_client.cpp
 )
+
+add_executable(capture
+    camera/capture.cpp
+    camera/jpeg_work.cpp
+)
+
+
+
+target_link_libraries(capture PRIVATE ${OpenCV_LIBS})
