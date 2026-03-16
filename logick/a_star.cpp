@@ -21,8 +21,8 @@ Algoritm_Brezenhem algoritm_A(const std::vector<std::vector<int>>& map_matrix, i
     // то в какие стороны смотреть и ходить
     std::vector<std::pair<int, int>> dir = {{-1, 0}, {0, +1}, {1, +0}, {0, -1}};
 
-    // цикл пока не дойдет до конца(current_x != x_target || current_y != y_target) (можно сделать по одному шагу)
-    for(uint8_t step = 0; step <= 1; ++step){
+    // цикл идёт пока A* не выйдет из зоны препятствия целиком
+    for(int step = 0; step < 1000; ++step){
         // иницализация лучшей евристики из точки
         int best_dx{0};
         int best_dy{0};
@@ -37,9 +37,9 @@ Algoritm_Brezenhem algoritm_A(const std::vector<std::vector<int>>& map_matrix, i
 
             // проверка на выход за границы массива
             if(new_x < 0 || new_x >= map_matrix.size() || new_y < 0 || new_y >= map_matrix[0].size()) continue;
-            // std::cout << "current: " << map_matrix[current_x][current_y] << std::endl;
+            //std::cout << "current: " << map_matrix[current_x][current_y] << std::endl;
             //std::cout << "new" << map_matrix[new_x][new_y] << std::endl;
-            // std::cout << "current_x: " << current_x << " curretn_y: " << current_y << std::endl;
+            //std::cout << "current_x: " << current_x << " curretn_y: " << current_y << std::endl;
             //std::cout << "new_x: " << new_x << " new_y: " << new_y << std::endl;
             int heyrist = heuristik(new_x, new_y, x_target, y_target);
             //std::cout << "heyristik: " << heyrist << std::endl;
@@ -63,7 +63,20 @@ Algoritm_Brezenhem algoritm_A(const std::vector<std::vector<int>>& map_matrix, i
         // делаем шаг в сторону лучшей эвристики
         current_x += best_dx;
         current_y += best_dy;
-        // std::cout << "________________" << std::endl;
+        // std::cout << "  A* step " << step << ": (" << current_x << ", " << current_y
+        //           << ")  dx=" << best_dx << " dy=" << best_dy
+        //           << "  cell=" << map_matrix[current_x][current_y] << std::endl;
+
+        // проверяем: если следующий шаг брезенхема отсюда тоже свободен — отдаём управление
+        if(map_matrix[current_x][current_y] == 5) continue;
+        double rk = (x_target != current_x)
+            ? (double)(y_target - current_y) / (double)(x_target - current_x)
+            : 1.0;
+        int nx = current_x + 1;
+        int ny = current_y + (rk >= 0.5 ? 1 : 0);
+        bool next_free = (nx < (int)map_matrix.size() && ny < (int)map_matrix[0].size()
+                          && map_matrix[nx][ny] != 5);
+        if(next_free) break;
     }
     if (current_x == x_target && current_y == y_target){
         result.found = true;

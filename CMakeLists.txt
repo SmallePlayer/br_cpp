@@ -11,17 +11,18 @@ include_directories(include)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 
-add_executable(main
-    main.cpp
+add_executable(algoritm
     logick/search_path.cpp
     logick/brezenhem.cpp
     logick/a_star.cpp
 )
 add_executable(tcp_server
     network/tcp_server.cpp
+    network/settings_socket.cpp
 )
 add_executable(tcp_client
     network/tcp_client.cpp
+    network/settings_socket.cpp
 )
 
 add_executable(capture
@@ -32,6 +33,7 @@ add_executable(capture
 
 add_executable(send_frame
     network/send_frame.cpp
+    network/settings_socket.cpp
     camera/frames.cpp
     camera/jpeg_work.cpp
 
@@ -39,25 +41,13 @@ add_executable(send_frame
 
 add_executable(reciv_frame
     network/reciv_frame.cpp
+    network/settings_socket.cpp
     camera/frames.cpp
     camera/jpeg_work.cpp
 )
 
-add_executable(send_udp_frame
-    network/udp_server.cpp
-    camera/frames.cpp
-    camera/jpeg_work.cpp
-)
-
-add_executable(reciv_udp_frame
-    network/udp_client.cpp
-    camera/frames.cpp
-    camera/jpeg_work.cpp
-)
 
 
 target_link_libraries(send_frame PRIVATE ${OpenCV_LIBS} Threads::Threads)
 target_link_libraries(reciv_frame PRIVATE ${OpenCV_LIBS} Threads::Threads)
 target_link_libraries(capture PRIVATE ${OpenCV_LIBS})
-target_link_libraries(send_udp_frame PRIVATE ${OpenCV_LIBS} Threads::Threads)
-target_link_libraries(reciv_udp_frame PRIVATE ${OpenCV_LIBS} Threads::Threads)

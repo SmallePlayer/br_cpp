@@ -21,6 +21,7 @@ int main() {
     
 
     cv::VideoCapture cap(0);
+    cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M','J','P','G'));
     if(!cap.isOpened()){
         std::cerr << "Не удалось открыть камеру!" << std::endl;
         return -1;
@@ -41,7 +42,7 @@ int main() {
             continue;
         }
         
-        std::vector<uchar> jpeg_buffer = jpeg_compress(local);
+        //std::vector<uchar> jpeg_buffer = jpeg_compress(local);
         //cv::Mat decode_frame = jpeg_decompress(jpeg_buffer);
         
         frame_score(start_time);

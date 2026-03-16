@@ -11,6 +11,7 @@
 #include <opencv2/opencv.hpp>
 #include "jpeg_work.h"
 #include "frames.h"
+#include "settings_socket.h"
 
 
 int64_t now_ms() {
@@ -23,27 +24,25 @@ int main(){
     const int PORT = 8080;
     const char* HOST = "127.0.0.1";
 
-    int sock_number = socket(AF_INET, SOCK_STREAM, 0);
+    int socket_id = create_socket();
     
-    sockaddr_in server_addres;
-    server_addres.sin_family = AF_INET;
-    server_addres.sin_port = htons(PORT);
+    sockaddr_in server_addres = settings_client_socket(socket_id, (char*)HOST, PORT);
 
-    inet_pton(AF_INET, HOST, &server_addres.sin_addr);
-
-    connect(sock_number, (sockaddr*)&server_addres, sizeof(server_addres));
+    connect_server(socket_id, server_addres);
 
     int flag = 1;
-    setsockopt(sock_number, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));
+    setsockopt(socket_id, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));
 
     int buf = 4 * 1024 * 1024;
-    setsockopt(sock_number, SOL_SOCKET, SO_SNDBUF, &buf, sizeof(buf));
+    setsockopt(socket_id, SOL_SOCKET, SO_SNDBUF, &buf, sizeof(buf));
 
 
 
     std::cout << "Connected to server!\n";
 
     cv::VideoCapture cap(0);
+    cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M','J','P','G'));
+    std::cout << cap.get(cv::CAP_PROP_FPS);
     if(!cap.isOpened()){
         std::cerr << "Не удалось открыть камеру!" << std::endl;
         return -1;
@@ -59,7 +58,7 @@ int main(){
 
         int64_t ts = now_ms();
 
-        std::vector<uchar> buffer = jpeg_compress(local);
+        std::vector<uchar> buffer = jpeg_compress(local, 60);
         uint32_t size = htonl(buffer.size());
         // send(sock_number, &ts, sizeof(ts), 0);
         // send(sock_number, &size, sizeof(size), 0);
@@ -69,15 +68,15 @@ int main(){
         memcpy(packet.data(), &ts, sizeof(ts));
         memcpy(packet.data() + sizeof(ts), &size, sizeof(size));
         memcpy(packet.data() + sizeof(ts) + sizeof(size), buffer.data(), buffer.size());
-        send(sock_number, packet.data(), packet.size(), 0);
+        send(socket_id, packet.data(), packet.size(), 0);
 
         // ждём подтверждения от receiver перед отправкой следующего кадра
         char ack = 0;
-        recv(sock_number, &ack, sizeof(ack), 0);
+        recv(socket_id, &ack, sizeof(ack), 0);
     }
 
     // 6. Закрываем сокет
-    close(sock_number);
+    close(socket_id);
     cap.release();
     return 0;
 }

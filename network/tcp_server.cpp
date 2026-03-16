@@ -5,67 +5,46 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include "settings_socket.h"
 
-struct __attribute__((packed)) Robot {
-    int x;
-    int y;
-};
+
+const int PORT = 8080; // порт для прослушивания
+const char* HOST = "127.0.0.1"; // адрес для прослушивания (локальный хост)
+
+
 
 int main(){
-    const int PORT = 8080; // порт для прослушивания
-    const char* HOST = "127.0.0.1"; // адрес для прослушивания (локальный хост)
-
-    int server_number = socket(AF_INET, SOCK_STREAM, 0); // создание сокета
-
-    uint8_t opt = 1; // разрешить повторное использование адреса
-    setsockopt(server_number, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)); // установка опции для сокета
-
-    sockaddr_in address{}; // структура для хранения адреса сервера
-    address.sin_family = AF_INET; // семейство протоколов (IPv4)
-    address.sin_addr.s_addr = INADDR_ANY; // принимать соединения на всех интерфейсах
-    address.sin_port = htons(PORT); // преобразование порта в сетевой порядок байтов
-
-    bind(server_number, (sockaddr*)&address, sizeof(address)); // привязка сокета к адресу и порту
-
-    listen(server_number, 5); // начало прослушивания входящих соединений (макс. 5 в очереди)
-
-    sockaddr_in client_addr{}; // структура для хранения адреса клиента
-    socklen_t client_len = sizeof(client_addr);
-
-    int client_fd = accept(server_number, (sockaddr*)&client_addr, &client_len);
-
-    int bytes = 0;
-
+    int server_id = create_socket();
+    settings_server_socket(server_id, PORT, 5);
+    int client_id = accpet_client(server_id);
     
-    Robot robot{};
-    while (true){
-        
+    int answer = 0;
 
-        bytes = read(client_fd, &robot, sizeof(robot));
-        robot.x = ntohl(robot.x);
-        robot.y = ntohl(robot.y);
+    int data = 0;
+
+    while (true){
+        answer = read(client_id, &data, sizeof(data));
         
-        if(bytes == 0){
+        if(answer == 0){
             std::cout << "Клиент отключился\n";
             break;
         }
 
-        if (bytes < 0) {
-            // < 0 = ошибка
+        if (answer < 0) {
             perror("read error");
             break;
         }
 
-        std::cout << "Получено (" << bytes << " байт): x=" << robot.x << ", y=" << robot.y << "\n";
+        std::cout << "Получено (" << answer << " байт): data=" << data << "\n";
 
-        std::string response = "Сервер получил: x=" + std::to_string(robot.x) + ", y=" + std::to_string(robot.y);
-        send(client_fd, response.c_str(), response.size(), 0);
+        std::string response = "Сервер получил: data=" + std::to_string(data);
+        send(client_id, response.c_str(), response.size(), 0);
 
 
     }
 
-    close(client_fd);  // закрыть соединение с клиентом
-    close(server_number);
+    close(client_id);  // закрыть соединение с клиентом
+    close(server_id);
 
     return 0;
 }
