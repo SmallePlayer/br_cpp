@@ -7,12 +7,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include "settings_socket.h"
+#include "net.h"
 
-
-
-const int PORT = 8080;
-const char* HOST = "127.0.0.1";
 
 
 int main(){
@@ -26,10 +22,10 @@ int main(){
     std::cout << "Connected to server!\n";
 
     
-    int data{5};
+    float data{5.2f};
 
     while (true){
-        send(socket_id, &data, sizeof(data), 0);
+        send_data(socket_id, data);
 
         char buffer[1024]{};
         read(socket_id, buffer, sizeof(buffer) - 1);

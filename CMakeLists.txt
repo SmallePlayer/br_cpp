@@ -18,11 +18,11 @@ add_executable(algoritm
 )
 add_executable(tcp_server
     network/tcp_server.cpp
-    network/settings_socket.cpp
+    network/net.cpp
 )
 add_executable(tcp_client
     network/tcp_client.cpp
-    network/settings_socket.cpp
+    network/net.cpp
 )
 
 add_executable(capture
@@ -33,7 +33,7 @@ add_executable(capture
 
 add_executable(send_frame
     network/send_frame.cpp
-    network/settings_socket.cpp
+    network/net.cpp
     camera/frames.cpp
     camera/jpeg_work.cpp
 
@@ -41,7 +41,7 @@ add_executable(send_frame
 
 add_executable(reciv_frame
     network/reciv_frame.cpp
-    network/settings_socket.cpp
+    network/net.cpp
     camera/frames.cpp
     camera/jpeg_work.cpp
 )

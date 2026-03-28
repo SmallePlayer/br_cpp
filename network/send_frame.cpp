@@ -11,7 +11,7 @@
 #include <opencv2/opencv.hpp>
 #include "jpeg_work.h"
 #include "frames.h"
-#include "settings_socket.h"
+#include "net.h"
 
 
 int64_t now_ms() {
@@ -20,56 +20,57 @@ int64_t now_ms() {
     ).count();
 }
 
+void copy_data(){
+
+}
+
 int main(){
-    const int PORT = 8080;
-    const char* HOST = "127.0.0.1";
+    const int PORT = 8080; // порт для подключения
+    const char* HOST = "127.0.0.1"; // адрес для подключения
 
-    int socket_id = create_socket();
+    int socket_id = create_socket(); // 1. Создаём сокет
     
-    sockaddr_in server_addres = settings_client_socket(socket_id, (char*)HOST, PORT);
+    sockaddr_in server_addres = settings_client_socket(socket_id, (char*)HOST, PORT); // 2. Настраиваем адрес сервера
 
-    connect_server(socket_id, server_addres);
+    connect_server(socket_id, server_addres); // 3. Подключаемся к серверу
 
     int flag = 1;
-    setsockopt(socket_id, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));
+    setsockopt(socket_id, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag)); // отключаем Nagle's algorithm для уменьшения задержки
 
     int buf = 4 * 1024 * 1024;
-    setsockopt(socket_id, SOL_SOCKET, SO_SNDBUF, &buf, sizeof(buf));
+    setsockopt(socket_id, SOL_SOCKET, SO_SNDBUF, &buf, sizeof(buf)); // увеличиваем размер буфера отправки для уменьшения вероятности блокировки при отправке больших кадров
 
 
 
     std::cout << "Connected to server!\n";
 
-    cv::VideoCapture cap(0);
-    cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M','J','P','G'));
-    std::cout << cap.get(cv::CAP_PROP_FPS);
+    cv::VideoCapture cap(0); // открываем камеру
+    cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M','J','P','G')); // устанавливаем кодек MJPEG для получения сжатых кадров напрямую из камеры
+    std::cout << cap.get(cv::CAP_PROP_FPS) << std::endl; // выводим FPS камеры для отладки
     if(!cap.isOpened()){
         std::cerr << "Не удалось открыть камеру!" << std::endl;
         return -1;
     }
 
-    std::thread t(capture_camera, std::ref(cap));
-    t.detach();
+    std::thread t(capture_camera, std::ref(cap)); // запускаем отдельный поток для захвата кадров с камеры
+    t.detach(); // отсоединяем поток, так как он будет работать бесконечно и не требует синхронизации с основным потоком
 
     while (true){
-        cv::Mat local = get_frame();
+        cv::Mat local = get_frame(); // получаем последний захваченный кадр из глобальной переменной, которую обновляет поток захвата камеры
 
-        if (local.empty()) continue;
+        if (local.empty()) continue; // если кадр пустой, пропускаем итерацию 
 
-        int64_t ts = now_ms();
+        int64_t ts = now_ms(); // получаем текущее время в миллисекундах
 
-        std::vector<uchar> buffer = jpeg_compress(local, 60);
-        uint32_t size = htonl(buffer.size());
-        // send(sock_number, &ts, sizeof(ts), 0);
-        // send(sock_number, &size, sizeof(size), 0);
-        // send(sock_number, buffer.data(), buffer.size(), 0);
+        std::vector<uchar> buffer = jpeg_compress(local, 60); // сжимаем кадр в JPEG формат с качеством 60 для уменьшения размера данных и, соответственно, задержки при отправке
+        uint32_t size = htonl(buffer.size()); // преобразуем размер кадра в сетевой порядок байтов (big-endian) для корректной передачи по сети
 
-        std::vector<uchar> packet(sizeof(int64_t) + sizeof(uint32_t) + buffer.size());
-        memcpy(packet.data(), &ts, sizeof(ts));
-        memcpy(packet.data() + sizeof(ts), &size, sizeof(size));
-        memcpy(packet.data() + sizeof(ts) + sizeof(size), buffer.data(), buffer.size());
-        send(socket_id, packet.data(), packet.size(), 0);
-
+        std::vector<uchar> packet(sizeof(int64_t) + sizeof(uint32_t) + buffer.size());   // создаём буфер для отправки
+        memcpy(packet.data(), &ts, sizeof(ts));                                          // копируем метку времени в начало пакета
+        memcpy(packet.data() + sizeof(ts), &size, sizeof(size));                         // копируем размер кадра после метки времени
+        memcpy(packet.data() + sizeof(ts) + sizeof(size), buffer.data(), buffer.size()); // копируем данные кадра после размера
+        send(socket_id, packet.data(), packet.size(), 0); // отправляем весь пакет целиком
+        
         // ждём подтверждения от receiver перед отправкой следующего кадра
         char ack = 0;
         recv(socket_id, &ack, sizeof(ack), 0);

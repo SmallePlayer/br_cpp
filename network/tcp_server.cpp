@@ -5,7 +5,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include "settings_socket.h"
+#include "net.h"
 
 
 const int PORT = 8080; // порт для прослушивания
@@ -18,12 +18,12 @@ int main(){
     settings_server_socket(server_id, PORT, 5);
     int client_id = accpet_client(server_id);
     
-    int answer = 0;
+    float answer = 0.0f;
 
-    int data = 0;
+    
 
     while (true){
-        answer = read(client_id, &data, sizeof(data));
+        reciv_data(client_id, answer);
         
         if(answer == 0){
             std::cout << "Клиент отключился\n";
@@ -35,9 +35,9 @@ int main(){
             break;
         }
 
-        std::cout << "Получено (" << answer << " байт): data=" << data << "\n";
+        std::cout << "Получено (" << answer << " байт): data=" << answer << "\n";
 
-        std::string response = "Сервер получил: data=" + std::to_string(data);
+        std::string response = "Сервер получил: data=" + std::to_string(answer);
         send(client_id, response.c_str(), response.size(), 0);
 
 
