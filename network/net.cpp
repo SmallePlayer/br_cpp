@@ -11,6 +11,7 @@
 
 
 
+int socket_id_global = -1; 
 
 int create_socket(){
     int socket_id = socket(AF_INET, SOCK_STREAM, 0);
@@ -48,4 +49,13 @@ int accpet_client(int server_number){
 
     int client_fd = accept(server_number, (sockaddr*)&client_addr, &client_len);
     return client_fd;
+}
+
+
+void on_exit(int sig) {
+    std::cout << "\nЗакрываю соединение...\n";
+    if (socket_id_global >= 0) {
+        close(socket_id_global);
+    }
+    exit(0);
 }

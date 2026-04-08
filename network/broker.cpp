@@ -9,8 +9,7 @@
 #include <vector>
 #include <mutex>
 #include "net.h"
-#include "frames.h"
-#include "jpeg_work.h"
+
 
 struct Client{
     int sock_client;
@@ -18,6 +17,7 @@ struct Client{
 };
 
 std::vector<Client> clients;
+std::vector<std::string> topiks;
 
 const int PORT = 8080; // порт для прослушивания
 const char* HOST = "127.0.0.1"; // адрес для прослушивания (локальный хост)
@@ -43,18 +43,19 @@ void thread_client(int client_id){ // функция для работы с ка
     c.sock_client = client_id;
 
     int answer{0}; // переменная с данными
-    std::string role_client = " ";
-    reciv_data(client_id, role_client);
+    Subscribe subscribers;
+    reciv_data(client_id, subscribers);
 
-    if(role_client == "sub") {
+    if(subscribers.role == "sub") {
         std::cout << "sub" << std::endl;
         c.role = "sub";
     }
-    else if(role_client == "pub") {
+    else if(subscribers.role == "pub") {
         std::cout << "pub" << std::endl;
         c.role = "pub";
     }
-
+    
+    topiks.emplace_back(subscribers.topik);
     clients.emplace_back(c);
 
     print_client();

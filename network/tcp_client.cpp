@@ -11,16 +11,6 @@
 #include "net.h"
 
 
-int socket_id_global = -1;  // ⭐ глобальная для signal handler
-
-void on_exit(int sig) {     // ⭐ обработчик
-    std::cout << "\nЗакрываю соединение...\n";
-    if (socket_id_global >= 0) {
-        close(socket_id_global);
-    }
-    exit(0);
-}
-
 int main(){
     const int PORT = 8080;
     const char* HOST = "127.0.0.1";

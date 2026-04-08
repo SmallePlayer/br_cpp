@@ -7,15 +7,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(OpenCV REQUIRED)
 find_package(Threads REQUIRED) 
 
-include_directories(include)
+include_directories(camera logick network)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 
 add_executable(broker
     network/broker.cpp
     network/net.cpp
-    camera/frames.cpp
-    camera/jpeg_work.cpp
 )
 add_executable(pub
     network/pub.cpp
