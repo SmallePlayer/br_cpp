@@ -11,6 +11,21 @@ include_directories(include)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 
+add_executable(broker
+    network/broker.cpp
+    network/net.cpp
+    camera/frames.cpp
+    camera/jpeg_work.cpp
+)
+add_executable(pub
+    network/pub.cpp
+    network/net.cpp
+)
+add_executable(sub
+    network/sub.cpp
+    network/net.cpp
+)
+
 add_executable(algoritm
     logick/search_path.cpp
     logick/brezenhem.cpp
@@ -47,7 +62,9 @@ add_executable(reciv_frame
 )
 
 
-
+target_link_libraries(tcp_server PRIVATE Threads::Threads)
+target_link_libraries(tcp_client PRIVATE Threads::Threads)
+target_link_libraries(broker PRIVATE ${OpenCV_LIBS} Threads::Threads)
 target_link_libraries(send_frame PRIVATE ${OpenCV_LIBS} Threads::Threads)
 target_link_libraries(reciv_frame PRIVATE ${OpenCV_LIBS} Threads::Threads)
 target_link_libraries(capture PRIVATE ${OpenCV_LIBS})

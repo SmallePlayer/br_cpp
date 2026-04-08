@@ -11,9 +11,9 @@
 #include "net.h"
 
 
-int socket_id_global = -1;  // ⭐ глобальная для signal handler
+int socket_id_global = -1;
 
-void on_exit(int sig) {     // ⭐ обработчик
+void on_exit(int sig) {
     std::cout << "\nЗакрываю соединение...\n";
     if (socket_id_global >= 0) {
         close(socket_id_global);
@@ -21,9 +21,21 @@ void on_exit(int sig) {     // ⭐ обработчик
     exit(0);
 }
 
+void close_dissconnect(int socket_id){
+    char buf[1];  
+        ssize_t n = recv(socket_id, buf, sizeof(buf), 0);
+
+        if (n == 0) {
+            std::cout << "Брокер отключился\n";
+            close(socket_id);
+            exit(0);
+        }
+}
+
 int main(){
     const int PORT = 8080;
     const char* HOST = "127.0.0.1";
+    std::string role = "sub";
 
     signal(SIGINT, on_exit);
 
@@ -33,18 +45,16 @@ int main(){
     connect_server(socket_id, server_addres);
 
     std::cout << "Connected to server!\n";
-
+    send_data(socket_id, role);
     
-    int data{5};
+    int data{0};
 
     while (true){
-        send_data(socket_id, data);
-        // std::cout << "data: ";
-        // std::cout << data << std::endl;
+        reciv_data(socket_id, data);
+        std::cout << "data: ";
+        std::cout << data << std::endl;
 
-        // char buffer[1024]{};
-        // read(socket_id, buffer, sizeof(buffer) - 1);
-        // std::cout << "Ответ сервера: " << buffer << "\n";
+        close_dissconnect(socket_id);
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }

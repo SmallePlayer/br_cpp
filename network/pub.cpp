@@ -24,6 +24,7 @@ void on_exit(int sig) {     // ⭐ обработчик
 int main(){
     const int PORT = 8080;
     const char* HOST = "127.0.0.1";
+    std::string role = "pub";
 
     signal(SIGINT, on_exit);
 
@@ -33,11 +34,13 @@ int main(){
     connect_server(socket_id, server_addres);
 
     std::cout << "Connected to server!\n";
+    send_data(socket_id, role);
 
     
     int data{5};
 
     while (true){
+
         send_data(socket_id, data);
         // std::cout << "data: ";
         // std::cout << data << std::endl;
