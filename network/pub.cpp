@@ -8,7 +8,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include "br_time.h"
 #include "net.h"
+
 
 int main()
 {
@@ -41,7 +43,7 @@ int main()
         // read(socket_id, buffer, sizeof(buffer) - 1);
         // std::cout << "Ответ сервера: " << buffer << "\n";
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        delay_seconds(1);
     }
 
     close(socket_id);

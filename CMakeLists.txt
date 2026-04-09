@@ -14,14 +14,17 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable(broker
     network/broker.cpp
     network/net.cpp
+    network/time.cpp
 )
 add_executable(pub
     network/pub.cpp
     network/net.cpp
+    network/time.cpp
 )
 add_executable(sub
     network/sub.cpp
     network/net.cpp
+    network/time.cpp
 )
 
 add_executable(algoritm
@@ -62,7 +65,11 @@ add_executable(reciv_frame
 
 target_link_libraries(tcp_server PRIVATE Threads::Threads)
 target_link_libraries(tcp_client PRIVATE Threads::Threads)
-target_link_libraries(broker PRIVATE ${OpenCV_LIBS} Threads::Threads)
+
+target_link_libraries(broker PRIVATE Threads::Threads)
+target_link_libraries(pub PRIVATE Threads::Threads)
+target_link_libraries(sub PRIVATE Threads::Threads)
+
 target_link_libraries(send_frame PRIVATE ${OpenCV_LIBS} Threads::Threads)
 target_link_libraries(reciv_frame PRIVATE ${OpenCV_LIBS} Threads::Threads)
 target_link_libraries(capture PRIVATE ${OpenCV_LIBS})
