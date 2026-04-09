@@ -10,47 +10,51 @@
 
 extern int socket_id_global;
 
-struct Subscribe{
+struct Subscribe
+{
     std::string role;
     std::string topik;
 };
 
-enum class RecvStatus {
-    OK,         // данные получены
-    DISCONNECTED,  // клиент закрыл соединение (recv == 0)
-    ERROR       // ошибка сокета
+enum class RecvStatus
+{
+    OK,           // данные получены
+    DISCONNECTED, // клиент закрыл соединение (recv == 0)
+    ERROR         // ошибка сокета
 };
 
 int create_socket();
 sockaddr_in settings_server_socket(int server_number, int PORT, int queue = 5);
-sockaddr_in settings_client_socket(int server_number, char* HOST, int PORT);
+sockaddr_in settings_client_socket(int server_number, char *HOST, int PORT);
 void connect_server(int socket_id, sockaddr_in server_addres);
 int accpet_client(int server_number);
 void on_exit(int sig);
 
-template<typename T>
-void send_data(int socket_id, const T& data) {
+template <typename T>
+void send_data(int socket_id, const T &data)
+{
     send(socket_id, &data, sizeof(data), 0);
-    
 }
 
-template<typename T>
-RecvStatus reciv_data(int socket_id, T& data) {
+template <typename T>
+RecvStatus reciv_data(int socket_id, T &data)
+{
     ssize_t n = read(socket_id, &data, sizeof(data));
-    
-    if (n == 0) {
-        return RecvStatus::DISCONNECTED;  // ⭐ клиент отключился
+
+    if (n == 0)
+    {
+        return RecvStatus::DISCONNECTED; // ⭐ клиент отключился
     }
-    if (n < 0) {
+    if (n < 0)
+    {
         return RecvStatus::ERROR;
     }
-    if (n != sizeof(data)) {
+    if (n != sizeof(data))
+    {
         // неполные данные — тоже ошибка
         return RecvStatus::ERROR;
     }
     return RecvStatus::OK;
 }
-
-
 
 #endif

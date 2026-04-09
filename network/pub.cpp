@@ -4,18 +4,16 @@
 #include <unistd.h>
 #include <thread>
 #include <chrono>
-#include <csignal> 
+#include <csignal>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "net.h"
 
-
-
-
-int main(){
+int main()
+{
     const int PORT = 8080;
-    const char* HOST = "127.0.0.1";
+    const char *HOST = "127.0.0.1";
     Subscribe sub;
     sub.role = "pub";
     sub.topik = "info";
@@ -24,16 +22,16 @@ int main(){
 
     int socket_id = create_socket();
     socket_id_global = socket_id;
-    sockaddr_in server_addres = settings_client_socket(socket_id, (char*)HOST, PORT);
+    sockaddr_in server_addres = settings_client_socket(socket_id, (char *)HOST, PORT);
     connect_server(socket_id, server_addres);
 
     std::cout << "Connected to server!\n";
     send_data(socket_id, sub);
 
-    
     int data{5};
 
-    while (true){
+    while (true)
+    {
 
         send_data(socket_id, data);
         // std::cout << "data: ";
