@@ -8,8 +8,11 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "net.h"
+#include "signals.hpp"
+#include "config.hpp"
 
 int socket_id_global = -1;
+
 
 int create_socket()
 {
@@ -62,4 +65,34 @@ void on_exit(int sig)
         close(socket_id_global);
     }
     exit(0);
+}
+
+
+int create_publisher(std::string current_topik){
+    setup_signal_handlers();
+    ClientHello sub;
+    sub.role = "pub";
+    sub.topik = current_topik;
+    auto socket_id = create_socket();
+    sockaddr_in server_addres = settings_client_socket(socket_id, (char *)HOST, PORT);
+    connect_server(socket_id, server_addres);
+
+    std::cout << "Connected to server!\n";
+    send_data(socket_id, sub);
+    return socket_id;
+}
+
+int create_subscriber()
+{
+    ClientHello sub;
+    sub.role = "sub";
+    sub.topik = "info";
+
+    int socket_id = create_socket();
+    sockaddr_in server_addres = settings_client_socket(socket_id, (char *)HOST, PORT);
+    connect_server(socket_id, server_addres);
+
+    std::cout << "Connected to server!\n";
+    send_data(socket_id, sub);
+    return socket_id;
 }

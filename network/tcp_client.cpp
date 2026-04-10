@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 #include "net.h"
 #include "br_time.h"
+#include "signals.hpp"
 
 int main()
 {

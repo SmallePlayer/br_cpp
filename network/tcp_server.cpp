@@ -9,6 +9,7 @@
 #include <vector>
 #include <mutex>
 #include "net.h"
+#include "signals.hpp"
 
 const int PORT = 8080;          // порт для прослушивания
 const char *HOST = "127.0.0.1"; // адрес для прослушивания (локальный хост)

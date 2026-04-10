@@ -15,16 +15,19 @@ add_executable(broker
     network/broker.cpp
     network/net.cpp
     network/time.cpp
+    network/signals.cpp
 )
 add_executable(pub
     network/pub.cpp
     network/net.cpp
     network/time.cpp
+    network/signals.cpp
 )
 add_executable(sub
     network/sub.cpp
     network/net.cpp
     network/time.cpp
+    network/signals.cpp
 )
 
 add_executable(algoritm
@@ -36,11 +39,13 @@ add_executable(tcp_server
     network/tcp_server.cpp
     network/net.cpp
     network/time.cpp
+    network/signals.cpp
 )
 add_executable(tcp_client
     network/tcp_client.cpp
     network/net.cpp
     network/time.cpp
+    network/signals.cpp
 )
 
 add_executable(capture
@@ -54,7 +59,7 @@ add_executable(send_frame
     network/net.cpp
     camera/frames.cpp
     camera/jpeg_work.cpp
-
+    network/signals.cpp
 )
 
 add_executable(reciv_frame
@@ -62,6 +67,7 @@ add_executable(reciv_frame
     network/net.cpp
     camera/frames.cpp
     camera/jpeg_work.cpp
+    network/signals.cpp
 )
 
 

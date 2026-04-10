@@ -15,6 +15,7 @@
 #include <vector>
 #include <mutex>
 #include "net.h"
+#include "config.hpp"
 
 // глобальная переменная для блокирования поток для работы с вектором.
 std::mutex clients_mutex;
@@ -30,8 +31,6 @@ struct Client
 // вектор подключившихся клиентов
 std::vector<Client> clients;
 
-const int PORT = 8080;          // порт для прослушивания
-const char *HOST = "127.0.0.1"; // адрес для прослушивания (локальный хост)
 
 // функция отвечающая за удаления клиента из вектора clients
 void delete_client(int client_id)
