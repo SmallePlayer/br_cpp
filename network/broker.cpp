@@ -1,3 +1,9 @@
+/*
+Брокер подругому опистаь данный код можно как сервер переадрисовщик.
+Задача данного код подключать к себе  все созданые ноды которые создают топики.
+Брокер получает соединение и определяет к нему подключился publisher или subscriber
+и дальше решает ему получать от ноды соообщения или отправлять ноду сообщение.
+*/
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -10,8 +16,10 @@
 #include <mutex>
 #include "net.h"
 
+// глобальная переменная для блокирования поток для работы с вектором.
 std::mutex clients_mutex;
 
+// структура отвечающая за данные которые получает от клиента
 struct Client
 {
     int sock_client;
@@ -19,11 +27,13 @@ struct Client
     std::string topik;
 };
 
+// вектор подключившихся клиентов
 std::vector<Client> clients;
 
 const int PORT = 8080;          // порт для прослушивания
 const char *HOST = "127.0.0.1"; // адрес для прослушивания (локальный хост)
 
+// функция отвечающая за удаления клиента из вектора clients
 void delete_client(int client_id)
 {
     for (auto it = clients.begin(); it != clients.end();)
@@ -39,6 +49,7 @@ void delete_client(int client_id)
     }
 }
 
+// дебаг функция для контроля подключения нод
 void print_client()
 {
     for (const auto &c : clients)
@@ -47,27 +58,29 @@ void print_client()
     }
 }
 
+// функция отвечающая за обработку подключенного клиента
 void thread_client(int client_id)
-{ // функция для работы с каждым отдельным потоком
-    Client c;
+{
+    Client c; // структура подключившегося клиента
     c.sock_client = client_id;
 
     int answer{0}; // переменная с данными
-    Subscribe subscribers;
-    reciv_data(client_id, subscribers);
 
-    if (subscribers.role == "sub")
+    ClientHello msg_hello;            // структура первого сообщения
+    reciv_data(client_id, msg_hello); // получения первого сообщения для создания или подкписки на топик
+
+    if (msg_hello.role == "sub")
     {
         std::cout << "sub" << std::endl;
         c.sock_client = client_id;
         c.role = "sub";
-        c.topik = subscribers.topik;
+        c.topik = msg_hello.topik;
     }
-    else if (subscribers.role == "pub")
+    else if (msg_hello.role == "pub")
     {
         std::cout << "pub" << std::endl;
         c.role = "pub";
-        c.topik = subscribers.topik;
+        c.topik = msg_hello.topik;
     }
 
     {
@@ -78,7 +91,7 @@ void thread_client(int client_id)
     print_client();
 
     while (true)
-    {                                                      // цикл работы с клиентом
+    {
         RecvStatus status = reciv_data(client_id, answer); // получение данных от отправителя
 
         if (status == RecvStatus::DISCONNECTED || status == RecvStatus::ERROR)
@@ -97,7 +110,7 @@ void thread_client(int client_id)
             continue; // Подписчик только слушает, не отправляет данные в брокер
         }
 
-        int data = answer;
+        auto data = answer;
 
         {
             std::lock_guard<std::mutex> lock(clients_mutex);
@@ -110,12 +123,10 @@ void thread_client(int client_id)
                 }
             }
         }
-
-        // std::string response = "Сервер получил: data=" + std::to_string(answer);
-        // send(client_id, response.c_str(), response.size(), 0);
     }
 }
 
+// главная функция отвечающая за создание сокета и создание потоков подключений клиентов
 int main()
 {
     int server_id = create_socket();            // создание сокета

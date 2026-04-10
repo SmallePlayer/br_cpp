@@ -10,7 +10,7 @@
 
 extern int socket_id_global;
 
-struct Subscribe
+struct ClientHello
 {
     std::string role;
     std::string topik;

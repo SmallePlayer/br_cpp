@@ -35,10 +35,12 @@ add_executable(algoritm
 add_executable(tcp_server
     network/tcp_server.cpp
     network/net.cpp
+    network/time.cpp
 )
 add_executable(tcp_client
     network/tcp_client.cpp
     network/net.cpp
+    network/time.cpp
 )
 
 add_executable(capture

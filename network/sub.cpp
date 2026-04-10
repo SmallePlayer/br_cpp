@@ -17,14 +17,13 @@ int main()
     const int PORT = 8080;
     const char *HOST = "127.0.0.1";
 
-    Subscribe sub;
+    ClientHello sub;
     sub.role = "sub";
     sub.topik = "info";
 
     signal(SIGINT, on_exit);
 
     int socket_id = create_socket();
-    socket_id_global = socket_id;
     sockaddr_in server_addres = settings_client_socket(socket_id, (char *)HOST, PORT);
     connect_server(socket_id, server_addres);
 
