@@ -13,7 +13,7 @@
 
 int main()
 {
-    int server_id = create_socket();         // Создаём сокет для сервера
+    int server_id = create_tcp_socket();         // Создаём сокет для сервера
     settings_server_socket(server_id, PORT); // Настраиваем адрес сервера и начинаем прослушивание входящих соединений
 
     int client_id = accpet_client(server_id); // ожидание и принятие входящего соединения от клиента

@@ -13,11 +13,40 @@
 
 int socket_id_global = -1;
 
-
-int create_socket()
+int create_tcp_socket()
 {
     int socket_id = socket(AF_INET, SOCK_STREAM, 0);
     return socket_id;
+}
+
+int create_socket()
+{
+    int socket_id = socket(AF_INET, SOCK_DGRAM, 0);
+    return socket_id;
+}
+
+void settings_udp_publisher(int socket_id)
+{
+    int PORT = 8888;
+    sockaddr_in address{};
+    memset(&address, 0, sizeof(address));
+    address.sin_family = AF_INET;
+    address.sin_port = htons(PORT);
+    address.sin_addr.s_addr = INADDR_ANY;
+
+    if (bind(socket_id, (struct sockaddr *)&address, sizeof(address)) < 0)
+    {
+        std::cerr << "Ошибка привязки\n";
+        close(socket_id);
+    }
+    std::cout << "UDP сервер запущен на порту 8888\n";
+}
+
+int create_pub()
+{
+    int fd = create_socket();
+    settings_udp_publisher(fd);
+    return fd;
 }
 
 sockaddr_in settings_server_socket(int server_id, int PORT, int queue)
@@ -27,7 +56,7 @@ sockaddr_in settings_server_socket(int server_id, int PORT, int queue)
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
-    setsockopt(server_id, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)); // установка опции для сокета
+    setsockopt(server_id, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
     bind(server_id, (sockaddr *)&address, sizeof(address));
     listen(server_id, queue);
@@ -67,13 +96,13 @@ void on_exit(int sig)
     exit(0);
 }
 
-
-int create_publisher(std::string current_topik){
+int create_publisher(std::string current_topik)
+{
     setup_signal_handlers();
     ClientHello sub;
     sub.role = "pub";
     sub.topik = current_topik;
-    auto socket_id = create_socket();
+    auto socket_id = create_tcp_socket();
     sockaddr_in server_addres = settings_client_socket(socket_id, (char *)HOST, PORT);
     connect_server(socket_id, server_addres);
 
@@ -82,13 +111,13 @@ int create_publisher(std::string current_topik){
     return socket_id;
 }
 
-int create_subscriber()
+int create_subscriber(std::string current_topik)
 {
     ClientHello sub;
     sub.role = "sub";
-    sub.topik = "info";
+    sub.topik = current_topik;
 
-    int socket_id = create_socket();
+    int socket_id = create_tcp_socket();
     sockaddr_in server_addres = settings_client_socket(socket_id, (char *)HOST, PORT);
     connect_server(socket_id, server_addres);
 

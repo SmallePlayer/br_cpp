@@ -75,7 +75,7 @@ struct ClientHello {
 
 #### Сетевой интерфейс (`net.h/cpp`)
 - **Функции**:
-  - `create_socket()` - создание сокета
+  - `create_tcp_socket()` - создание TCP сокета
   - `settings_server_socket()` - настройка сервера
   - `settings_client_socket()` - настройка клиента
   - `create_publisher()` / `create_subscriber()` - фабрики подключений

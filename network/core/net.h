@@ -25,15 +25,17 @@ enum class RecvStatus
     ERROR         // ошибка сокета
 };
 
-int create_socket();
+int create_pub();
+int create_tcp_socket();
 sockaddr_in settings_server_socket(int server_number, int PORT, int queue = 5);
 sockaddr_in settings_client_socket(int server_number, char *HOST, int PORT);
 void connect_server(int socket_id, sockaddr_in server_addres);
 int accpet_client(int server_number);
 void on_exit(int sig);
 int create_publisher(std::string current_topik);
-int create_subscriber();
+int create_subscriber(std::string current_topik);
 int check_disconnect(RecvStatus status, int sub);
+
 
 template <typename T>
 void send_data(int socket_id, const T &data)

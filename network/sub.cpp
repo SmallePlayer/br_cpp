@@ -2,7 +2,7 @@
 
 int main()
 {
-    auto sub = create_subscriber();
+    auto sub = create_subscriber("info");
 
     int data{0};
 

@@ -16,7 +16,7 @@ int main()
 {
     signal(SIGINT, on_exit);
 
-    int socket_id = create_socket();
+    int socket_id = create_tcp_socket();
     socket_id_global = socket_id;
     sockaddr_in server_addres = settings_client_socket(socket_id, (char *)HOST, PORT);
     connect_server(socket_id, server_addres);

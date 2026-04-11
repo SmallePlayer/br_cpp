@@ -17,7 +17,7 @@
 int main()
 {
 
-    int socket_id = create_socket(); // 1. Создаём сокет
+    int socket_id = create_tcp_socket(); // 1. Создаём сокет
 
     sockaddr_in server_addres = settings_client_socket(socket_id, (char *)HOST, PORT); // 2. Настраиваем адрес сервера
 
