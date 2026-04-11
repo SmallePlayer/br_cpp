@@ -14,9 +14,6 @@
 #include "config.hpp"
 
 
-
-
-
 int main()
 {   
     auto publisher = create_publisher("info");
