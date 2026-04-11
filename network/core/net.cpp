@@ -96,3 +96,19 @@ int create_subscriber()
     send_data(socket_id, sub);
     return socket_id;
 }
+
+int check_disconnect(RecvStatus status, int sub)
+{
+    if (status == RecvStatus::DISCONNECTED)
+    {
+        std::cout << "Брокер отключился\n";
+        close(sub);
+        return -1;
+    }
+    if (status == RecvStatus::ERROR)
+    {
+        std::cerr << "Ошибка приёма данных\n";
+        return -1;
+    }
+    return 0;
+}

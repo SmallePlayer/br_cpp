@@ -7,6 +7,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include "signals.hpp"
+#include "config.hpp"
 
 extern int socket_id_global;
 
@@ -31,6 +33,7 @@ int accpet_client(int server_number);
 void on_exit(int sig);
 int create_publisher(std::string current_topik);
 int create_subscriber();
+int check_disconnect(RecvStatus status, int sub);
 
 template <typename T>
 void send_data(int socket_id, const T &data)

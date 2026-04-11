@@ -1,18 +1,5 @@
-#include <iostream>
-#include <string>
-#include <cstring>
-#include <unistd.h>
-#include <thread>
-#include <chrono>
-#include <csignal>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include "br_time.h"
-#include "net.h"
-#include "signals.hpp"
-#include "config.hpp"
-
+#include "core/br_time.h"
+#include "core/net.h"
 
 int main()
 {   
@@ -25,7 +12,5 @@ int main()
         delay_seconds(1);
     }
 
-
-    close(publisher);
     return 0;
 }

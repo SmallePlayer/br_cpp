@@ -1,17 +1,4 @@
-#include <iostream>
-#include <string>
-#include <cstring>
-#include <unistd.h>
-#include <thread>
-#include <chrono>
-#include <csignal>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include "net.h"
-#include "config.hpp"
-
-
+#include "core/net.h"
 
 int main()
 {
@@ -23,23 +10,11 @@ int main()
     {
         RecvStatus status = reciv_data(sub, data);
 
-        if (status == RecvStatus::DISCONNECTED)
-        {
-            std::cout << "Брокер отключился\n";
-            close(sub);
-            break;
-        }
-        if (status == RecvStatus::ERROR)
-        {
-            std::cerr << "Ошибка приёма данных\n";
-            break;
-        }
-
+        if(check_disconnect(status, sub) < 0) {break;}
+        
         std::cout << "data: ";
         std::cout << data << std::endl;
     }
-
-    close(sub);
 
     return 0;
 }

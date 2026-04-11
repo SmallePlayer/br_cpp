@@ -8,11 +8,8 @@
 #include <thread>
 #include <vector>
 #include <mutex>
-#include "net.h"
-#include "signals.hpp"
+#include "core/net.h"
 
-const int PORT = 8080;          // порт для прослушивания
-const char *HOST = "127.0.0.1"; // адрес для прослушивания (локальный хост)
 
 void thread_client(int client_id)
 {                  // функция для работы с каждым отдельным потоком

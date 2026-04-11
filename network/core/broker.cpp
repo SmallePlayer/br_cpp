@@ -15,7 +15,6 @@
 #include <vector>
 #include <mutex>
 #include "net.h"
-#include "config.hpp"
 
 // глобальная переменная для блокирования поток для работы с вектором.
 std::mutex clients_mutex;

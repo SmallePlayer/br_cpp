@@ -8,15 +8,12 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include "net.h"
-#include "br_time.h"
-#include "signals.hpp"
+#include "core/net.h"
+#include "core/br_time.h"
+
 
 int main()
 {
-    const int PORT = 8080;
-    const char *HOST = "127.0.0.1";
-
     signal(SIGINT, on_exit);
 
     int socket_id = create_socket();
