@@ -42,11 +42,45 @@ void settings_udp_publisher(int socket_id)
     std::cout << "UDP сервер запущен на порту 8888\n";
 }
 
+
 int create_pub()
 {
     int fd = create_socket();
-    settings_udp_publisher(fd);
     return fd;
+}
+
+int create_sub()
+{
+    int fd = create_socket();
+    return fd;
+}
+
+void settings_udp_sub(int sub)
+{
+    sockaddr_in server_addr{};
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(PORT);
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+
+    if (bind(sub, (sockaddr *)&server_addr, sizeof(server_addr)) < 0)
+    {
+        std::cerr << "Ошибка bind\n";
+        close(sub);
+    }
+}
+
+int recv_int(int sub, int &data)
+{
+    sockaddr_in client_addr{};
+    socklen_t client_len = sizeof(client_addr);
+    ssize_t bytes_received = recvfrom(
+        sub,
+        &data,
+        sizeof(data),
+        0,
+        (sockaddr *)&client_addr,
+        &client_len);
+    return bytes_received;
 }
 
 sockaddr_in settings_server_socket(int server_id, int PORT, int queue)

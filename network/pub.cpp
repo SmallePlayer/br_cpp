@@ -1,26 +1,40 @@
 #include "core/br_time.h"
 #include "core/net.h"
 
+sockaddr_in server_addr{};
+
+void settings_udp_pub()
+{
+
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(PORT);
+    inet_pton(AF_INET, HOST, &server_addr.sin_addr);
+}
+
+void send_int(int pub, int &data)
+{
+    ssize_t byte_sent = sendto(
+        pub,
+        &data,
+        sizeof(data),
+        0,
+        (sockaddr *)&server_addr,
+        sizeof(server_addr));
+}
+
 int main()
 {
     int pub = create_pub();
+    settings_udp_pub();
 
-    sockaddr_in client_addr{};
-    socklen_t addr_len = sizeof(client_addr);
-    char buffer[1024];
-    
+    int counter{0};
+
     while (true)
-    { // 4. Приём данных от клиента
-        int n = recvfrom(pub, buffer, sizeof(buffer) - 1, 0,
-                         (struct sockaddr *)&client_addr, &addr_len);
-        if (n < 0)
-        {
-            std::cerr << "Ошибка приёма\n";
-            continue;
-        }
-        buffer[n] = '\0';
-        std::cout << "Получено от " << inet_ntoa(client_addr.sin_addr)
-                  << ":" << ntohs(client_addr.sin_port) << " -> " << buffer << std::endl;
+    {
+        send_int(pub, counter);
+        std::cout << "Send: " << counter << std::endl;
+        counter++;
+        delay_seconds(1);
     }
 }
 
