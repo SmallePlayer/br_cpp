@@ -10,7 +10,8 @@
 #include "net.h"
 #include "signals.hpp"
 #include "config.hpp"
-
+#include "send_recv.h"
+                                                                                                                       
 int socket_id_global = -1;
 
 int create_tcp_socket()
@@ -19,69 +20,29 @@ int create_tcp_socket()
     return socket_id;
 }
 
-int create_socket()
+int create_udp_socket()
 {
     int socket_id = socket(AF_INET, SOCK_DGRAM, 0);
     return socket_id;
 }
 
-void settings_udp_publisher(int socket_id)
-{
-    int PORT = 8888;
-    sockaddr_in address{};
-    memset(&address, 0, sizeof(address));
-    address.sin_family = AF_INET;
-    address.sin_port = htons(PORT);
-    address.sin_addr.s_addr = INADDR_ANY;
-
-    if (bind(socket_id, (struct sockaddr *)&address, sizeof(address)) < 0)
-    {
-        std::cerr << "Ошибка привязки\n";
-        close(socket_id);
-    }
-    std::cout << "UDP сервер запущен на порту 8888\n";
-}
 
 
 int create_pub()
 {
-    int fd = create_socket();
+    int fd = create_udp_socket();
     return fd;
 }
+
+
 
 int create_sub()
 {
-    int fd = create_socket();
+    int fd = create_udp_socket();
     return fd;
 }
 
-void settings_udp_sub(int sub)
-{
-    sockaddr_in server_addr{};
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(PORT);
-    server_addr.sin_addr.s_addr = INADDR_ANY;
 
-    if (bind(sub, (sockaddr *)&server_addr, sizeof(server_addr)) < 0)
-    {
-        std::cerr << "Ошибка bind\n";
-        close(sub);
-    }
-}
-
-int recv_int(int sub, int &data)
-{
-    sockaddr_in client_addr{};
-    socklen_t client_len = sizeof(client_addr);
-    ssize_t bytes_received = recvfrom(
-        sub,
-        &data,
-        sizeof(data),
-        0,
-        (sockaddr *)&client_addr,
-        &client_len);
-    return bytes_received;
-}
 
 sockaddr_in settings_server_socket(int server_id, int PORT, int queue)
 {

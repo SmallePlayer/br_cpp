@@ -28,6 +28,8 @@ enum class RecvStatus
 
 int create_tcp_socket();
 int create_pub();
+void settings_udp_pub();
+void send_int(int pub, int &data);
 int create_sub();
 void settings_udp_sub(int sub);
 int recv_int(int sub, int &data);

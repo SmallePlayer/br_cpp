@@ -116,7 +116,7 @@ br_cpp/
 - Функции: `create_socket()`, `settings_udp_publisher()`, `settings_udp_sub()`
 
 ```
-┌─────────────┐      TCP       ┌──────────┐      TCP       ┌─────────────┐
+┌─────────────┐      TCP      ┌──────────┐      TCP      ┌─────────────┐
 │  Publisher  │ ───────────── │  Broker  │ ───────────── │  Subscriber │
 │  (pub.cpp)  │  send_data()  │ :8080    │  recv_data()  │  (sub.cpp)  │
 └─────────────┘               └──────────┘               └─────────────┘

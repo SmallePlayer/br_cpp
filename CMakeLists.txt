@@ -20,12 +20,14 @@ add_executable(broker
 add_executable(pub
     network/pub.cpp
     network/core/net.cpp
+    network/core/send_recv.cpp
     network/core/time.cpp
     network/core/signals.cpp
 )
 add_executable(sub
     network/sub.cpp
     network/core/net.cpp
+    network/core/send_recv.cpp
     network/core/time.cpp
     network/core/signals.cpp
 )
