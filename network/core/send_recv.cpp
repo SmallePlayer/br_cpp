@@ -25,6 +25,20 @@ void settings_udp_sub(int sub)
     }
 }
 
+static sockaddr_in multicast_addr{};
+
+void settings_multicast_pub()
+{
+    multicast_addr.sin_family = AF_INET;
+    multicast_addr.sin_port = htons(MULTICAST_PORT);
+    inet_pton(AF_INET, MULTICAST_ADDR, &multicast_addr.sin_addr);
+}
+
+void settings_multicast_sub(int sub)
+{
+    setup_multicast_receiver(sub, MULTICAST_ADDR, MULTICAST_PORT);
+}
+
 //------send------
 
 void send_int(int pub, int &data)
@@ -60,10 +74,25 @@ void send_double(int pub, double &data)
         sizeof(server_addr));
 }
 
+void send_multicast_int(int pub, int data)
+{
+    sendto(pub, &data, sizeof(data), 0,
+           (sockaddr *)&multicast_addr, sizeof(multicast_addr));
+}
 
+void send_multicast_float(int pub, float data)
+{
+    sendto(pub, &data, sizeof(data), 0,
+           (sockaddr *)&multicast_addr, sizeof(multicast_addr));
+}
+
+void send_multicast_double(int pub, double data)
+{
+    sendto(pub, &data, sizeof(data), 0,
+           (sockaddr *)&multicast_addr, sizeof(multicast_addr));
+}
 
 //-----recv------
-
 
 int recv_int(int sub, int &data)
 {
@@ -105,4 +134,40 @@ int recv_double(int sub, double &data)
         (sockaddr *)&client_addr,
         &client_len);
     return bytes_received;
+}
+
+int recv_multicast_int(int sub, int &data)
+{
+    sockaddr_in src_addr{};
+    socklen_t addr_len = sizeof(src_addr);
+    return recvfrom(sub, 
+        &data, 
+        sizeof(data), 
+        0,       
+        (sockaddr *)&src_addr, 
+        &addr_len);
+}
+
+int recv_multicast_float(int sub, float &data)
+{
+    sockaddr_in src_addr{};
+    socklen_t addr_len = sizeof(src_addr);
+    return recvfrom(sub, 
+        &data, 
+        sizeof(data), 
+        0,
+        (sockaddr *)&src_addr, 
+        &addr_len);
+}
+
+int recv_multicast_double(int sub, double &data)
+{
+    sockaddr_in src_addr{};
+    socklen_t addr_len = sizeof(src_addr);
+    return recvfrom(sub, 
+        &data, 
+        sizeof(data), 
+        0,
+        (sockaddr *)&src_addr, 
+        &addr_len);
 }

@@ -32,17 +32,6 @@ add_executable(sub
     network/core/signals.cpp
 )
 
-
-add_executable(pub_frame
-    network/pub_frame.cpp
-    network/core/net.cpp
-    camera/frames.cpp
-    camera/jpeg_work.cpp
-    network/core/optimization.cpp
-    network/core/signals.cpp
-)
-
-
 add_executable(tcp_server
     network/tcp_server.cpp
     network/core/net.cpp
@@ -98,7 +87,6 @@ target_link_libraries(broker PRIVATE Threads::Threads)
 target_link_libraries(pub PRIVATE Threads::Threads)
 target_link_libraries(sub PRIVATE Threads::Threads)
 
-target_link_libraries(pub_frame PRIVATE ${OpenCV_LIBS} Threads::Threads)
 target_link_libraries(send_frame PRIVATE ${OpenCV_LIBS} Threads::Threads)
 target_link_libraries(reciv_frame PRIVATE ${OpenCV_LIBS} Threads::Threads)
 target_link_libraries(capture PRIVATE ${OpenCV_LIBS})

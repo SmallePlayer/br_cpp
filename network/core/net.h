@@ -9,6 +9,7 @@
 #include <arpa/inet.h>
 #include "signals.hpp"
 #include "config.hpp"
+#include "send_recv.h"
 
 extern int socket_id_global;
 
@@ -25,14 +26,12 @@ enum class RecvStatus
     ERROR         // ошибка сокета
 };
 
-
 int create_tcp_socket();
+int create_udp_socket();
+void setup_multicast_sender(int sock, int ttl = 1);
+void setup_multicast_receiver(int sock, const char* multicast_addr, int port);
 int create_pub();
-void settings_udp_pub();
-void send_int(int pub, int &data);
 int create_sub();
-void settings_udp_sub(int sub);
-int recv_int(int sub, int &data);
 sockaddr_in settings_server_socket(int server_number, int PORT, int queue = 5);
 sockaddr_in settings_client_socket(int server_number, char *HOST, int PORT);
 void connect_server(int socket_id, sockaddr_in server_addres);
@@ -41,7 +40,6 @@ void on_exit(int sig);
 int create_publisher(std::string current_topik);
 int create_subscriber(std::string current_topik);
 int check_disconnect(RecvStatus status, int sub);
-
 
 template <typename T>
 void send_data(int socket_id, const T &data)

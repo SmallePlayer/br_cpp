@@ -30,7 +30,6 @@ struct Client
 // вектор подключившихся клиентов
 std::vector<Client> clients;
 
-
 // функция отвечающая за удаления клиента из вектора clients
 void delete_client(int client_id)
 {
@@ -127,7 +126,7 @@ void thread_client(int client_id)
 // главная функция отвечающая за создание сокета и создание потоков подключений клиентов
 int main()
 {
-    int server_id = create_tcp_socket();            // создание сокета
+    int server_id = create_tcp_socket();        // создание сокета
     settings_server_socket(server_id, PORT, 5); // настройка сокета
     std::cout << "Server wait connection" << std::endl;
 

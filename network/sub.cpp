@@ -2,6 +2,24 @@
 
 
 
+int main(){
+    int sub = create_sub();
+    settings_multicast_sub(sub);
+
+    int data;
+    while (true) {
+        int bytes = recv_multicast_int(sub, data);
+        if (bytes > 0) {
+            std::cout << "Received: " << data << std::endl;
+        } else if (bytes < 0) {
+            perror("recvfrom error");
+            break;
+        }
+    }
+}
+
+
+/*
 int main()
 {
     int sub = create_sub();
@@ -16,6 +34,8 @@ int main()
         std::cout << "Received: " << data << std::endl; // <-- ВЫВОДИМ!
     }
 }
+*/
+
 
 // int main()
 // {
