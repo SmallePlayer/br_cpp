@@ -7,6 +7,9 @@ void settings_udp_sub(int sub);
 void settings_multicast_pub();
 void settings_multicast_sub(int sub);
 
+void send_hello(int fd, std::string topik);
+ssize_t recv_hello(int fd, std::string &msg)
+
 void send_int(int pub, int &data);
 void send_float(int pub, float &data);
 void send_double(int pub, double &data);

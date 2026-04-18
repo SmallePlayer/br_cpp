@@ -41,6 +41,12 @@ void settings_multicast_sub(int sub)
 
 //------send------
 
+void send_hello(int fd, std::string topik)
+{
+    sendto(fd, topik.data(), topik.size(), 0,
+           (struct sockaddr *)&server_addr, sizeof(server_addr));
+}
+
 void send_int(int pub, int &data)
 {
     ssize_t byte_sent = sendto(
@@ -94,12 +100,22 @@ void send_multicast_double(int pub, double data)
 
 //-----recv------
 
-int recv_int(int sub, int &data)
+char buffer[65535];
+sockaddr_in client_addr{};
+socklen_t client_len = sizeof(client_addr);
+
+ssize_t recv_hello(int fd, std::string &msg)
 {
-    sockaddr_in client_addr{};
-    socklen_t client_len = sizeof(client_addr);
+    ssize_t received = recvfrom(fd, buffer, sizeof(buffer), 0,
+                                (struct sockaddr *)&client_addr, &client_len);
+    std::string msg = std::string(buffer, received);
+    return received;
+}
+
+int recv_int(int fd, int &data)
+{
     ssize_t bytes_received = recvfrom(
-        sub,
+        fd,
         &data,
         sizeof(data),
         0,
@@ -108,12 +124,10 @@ int recv_int(int sub, int &data)
     return bytes_received;
 }
 
-int recv_float(int sub, float &data)
+int recv_float(int fd, float &data)
 {
-    sockaddr_in client_addr{};
-    socklen_t client_len = sizeof(client_addr);
     ssize_t bytes_received = recvfrom(
-        sub,
+        fd,
         &data,
         sizeof(data),
         0,
@@ -122,12 +136,10 @@ int recv_float(int sub, float &data)
     return bytes_received;
 }
 
-int recv_double(int sub, double &data)
+int recv_double(int fd, double &data)
 {
-    sockaddr_in client_addr{};
-    socklen_t client_len = sizeof(client_addr);
     ssize_t bytes_received = recvfrom(
-        sub,
+        fd,
         &data,
         sizeof(data),
         0,
@@ -136,38 +148,32 @@ int recv_double(int sub, double &data)
     return bytes_received;
 }
 
-int recv_multicast_int(int sub, int &data)
+int recv_multicast_int(int fd, int &data)
 {
-    sockaddr_in src_addr{};
-    socklen_t addr_len = sizeof(src_addr);
-    return recvfrom(sub, 
-        &data, 
-        sizeof(data), 
-        0,       
-        (sockaddr *)&src_addr, 
-        &addr_len);
+    return recvfrom(fd,
+                    &data,
+                    sizeof(data),
+                    0,
+                    (sockaddr *)&client_addr,
+                    &client_len);
 }
 
-int recv_multicast_float(int sub, float &data)
+int recv_multicast_float(int fd, float &data)
 {
-    sockaddr_in src_addr{};
-    socklen_t addr_len = sizeof(src_addr);
-    return recvfrom(sub, 
-        &data, 
-        sizeof(data), 
-        0,
-        (sockaddr *)&src_addr, 
-        &addr_len);
+    return recvfrom(fd,
+                    &data,
+                    sizeof(data),
+                    0,
+                    (sockaddr *)&client_addr,
+                    &client_len);
 }
 
-int recv_multicast_double(int sub, double &data)
+int recv_multicast_double(int fd, double &data)
 {
-    sockaddr_in src_addr{};
-    socklen_t addr_len = sizeof(src_addr);
-    return recvfrom(sub, 
-        &data, 
-        sizeof(data), 
-        0,
-        (sockaddr *)&src_addr, 
-        &addr_len);
+    return recvfrom(fd,
+                    &data,
+                    sizeof(data),
+                    0,
+                    (sockaddr *)&client_addr,
+                    &client_len);
 }

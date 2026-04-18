@@ -1,23 +1,31 @@
 #include "core/net.h"
 
-
-
-int main(){
+int main()
+{
     int sub = create_sub();
     settings_multicast_sub(sub);
 
-    int data;
-    while (true) {
-        int bytes = recv_multicast_int(sub, data);
-        if (bytes > 0) {
-            std::cout << "Received: " << data << std::endl;
-        } else if (bytes < 0) {
-            perror("recvfrom error");
-            break;
+    std::string message = " "; 
+    ssize_t bytes = recv_hello(sub, message);
+    
+    if(bytes > 0)
+    {
+        int data;
+        while (true)
+        {
+            int bytes = recv_multicast_int(sub, data);
+            if (bytes > 0)
+            {
+                std::cout << "Received: " << data << std::endl;
+            }
+            else if (bytes < 0)
+            {
+                perror("recvfrom error");
+                break;
+            }
         }
     }
 }
-
 
 /*
 int main()
@@ -35,7 +43,6 @@ int main()
     }
 }
 */
-
 
 // int main()
 // {

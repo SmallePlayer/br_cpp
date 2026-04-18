@@ -46,6 +46,15 @@ void settings_udp_sender(int fd)
 
 void setup_multicast_sender(int sock, int ttl)
 {
+    //create_topik
+
+    /*
+    Создание и отправка первого сообщения топика.
+    потом sub получается первое сообщение проверяет его размер если он совпадает с тем что пришло впервый 
+    раз и читает и получает подтверждение топиков.
+    */
+
+
     // Устанавливаем TTL (время жизни) для multicast пакетов
     // ttl = 1 - только локальная сеть, >1 - могут выходить за роутер
     u_char ttl_val = static_cast<u_char>(ttl);
@@ -96,9 +105,14 @@ void setup_multicast_receiver(int sock, const char *multicast_addr, int port)
     }
 }
 
-int create_pub()
+void create_topik(std::string topik){
+    std::cout << "Create topik: " << topik << std::endl;
+}
+
+int create_pub(std::string topik)
 {
     int fd = create_udp_socket();
+    create_topik(topik);
     return fd;
 }
 
@@ -107,6 +121,8 @@ int create_sub()
     int fd = create_udp_socket();
     return fd;
 }
+
+
 
 sockaddr_in settings_server_socket(int server_id, int PORT, int queue)
 {

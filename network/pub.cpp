@@ -4,9 +4,10 @@
 
 
 int main(){
-    int pub = create_pub();
+    int pub = create_pub("info");
     setup_multicast_sender(pub, 2);
     settings_multicast_pub();
+    send_hello(pub, "info");
 
     int counter = 0;
     while (true) {
