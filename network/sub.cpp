@@ -7,6 +7,7 @@ int main()
 
     std::string message = " "; 
     ssize_t bytes = recv_hello(sub, message);
+    std::cout << "[" << message << "]" << std::endl;
     
     if(bytes > 0)
     {

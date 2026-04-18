@@ -3,6 +3,10 @@
 //------settings------
 
 sockaddr_in server_addr{};
+static sockaddr_in multicast_addr{};
+sockaddr_in client_addr{};
+socklen_t client_len = sizeof(client_addr);
+
 void settings_udp_pub()
 {
 
@@ -25,7 +29,6 @@ void settings_udp_sub(int sub)
     }
 }
 
-static sockaddr_in multicast_addr{};
 
 void settings_multicast_pub()
 {
@@ -44,7 +47,7 @@ void settings_multicast_sub(int sub)
 void send_hello(int fd, std::string topik)
 {
     sendto(fd, topik.data(), topik.size(), 0,
-           (struct sockaddr *)&server_addr, sizeof(server_addr));
+           (struct sockaddr *)&multicast_addr, sizeof(multicast_addr));
 }
 
 void send_int(int pub, int &data)
@@ -100,15 +103,20 @@ void send_multicast_double(int pub, double data)
 
 //-----recv------
 
-char buffer[65535];
-sockaddr_in client_addr{};
-socklen_t client_len = sizeof(client_addr);
+
+
 
 ssize_t recv_hello(int fd, std::string &msg)
 {
+    char buffer[256];
     ssize_t received = recvfrom(fd, buffer, sizeof(buffer), 0,
                                 (struct sockaddr *)&client_addr, &client_len);
-    std::string msg = std::string(buffer, received);
+
+    if (received > 0)
+    {
+        msg.assign(buffer, received); // ← пишем в ссылку
+    }
+
     return received;
 }
 
