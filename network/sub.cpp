@@ -2,19 +2,24 @@
 
 int main()
 {
+    std::string topik = "info";
+
+    int sub_h = create_sub();
+    settings_multicast_sub(sub_h);
+
     int sub = create_sub();
-    settings_multicast_sub(sub);
+    settings_udp_sub(sub);
 
     std::string message = " "; 
-    ssize_t bytes = recv_hello(sub, message);
+    ssize_t bytes = recv_hello(sub_h, message);
     std::cout << "[" << message << "]" << std::endl;
     
-    if(bytes > 0)
+    if(bytes > 0 && message == topik)
     {
         int data;
         while (true)
         {
-            int bytes = recv_multicast_int(sub, data);
+            int bytes = recv_int(sub, data);
             if (bytes > 0)
             {
                 std::cout << "Received: " << data << std::endl;

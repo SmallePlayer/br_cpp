@@ -9,7 +9,6 @@ socklen_t client_len = sizeof(client_addr);
 
 void settings_udp_pub()
 {
-
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(PORT);
     inet_pton(AF_INET, HOST, &server_addr.sin_addr);

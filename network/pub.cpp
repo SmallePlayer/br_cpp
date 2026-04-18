@@ -4,14 +4,18 @@
 
 
 int main(){
-    int pub = create_pub("info");
-    setup_multicast_sender(pub, 2);
+
+    int pub_h = create_pub();
+    setup_multicast_sender(pub_h, 2);
     settings_multicast_pub();
-    send_hello(pub, "info");
+    send_hello(pub_h, "info");
+
+    int pub = create_pub();
+    settings_udp_pub();
 
     int counter = 0;
     while (true) {
-        send_multicast_int(pub, counter);
+        send_int(pub, counter);
         std::cout << "Sent: " << counter << std::endl;
         counter++;
         delay_seconds(1);

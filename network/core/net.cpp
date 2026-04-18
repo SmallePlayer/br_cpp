@@ -12,7 +12,16 @@
 #include "config.hpp"
 #include "send_recv.h"
 
+int PORT_topik = 50000;
+
 int socket_id_global = -1;
+
+struct Topik
+{
+    std::string name_topik;
+    int port;
+};
+std::vector<Topik> topiks;
 
 int create_tcp_socket()
 {
@@ -46,14 +55,13 @@ void settings_udp_sender(int fd)
 
 void setup_multicast_sender(int sock, int ttl)
 {
-    //create_topik
+    // create_topik
 
     /*
     Создание и отправка первого сообщения топика.
-    потом sub получается первое сообщение проверяет его размер если он совпадает с тем что пришло впервый 
+    потом sub получается первое сообщение проверяет его размер если он совпадает с тем что пришло впервый
     раз и читает и получает подтверждение топиков.
     */
-
 
     // Устанавливаем TTL (время жизни) для multicast пакетов
     // ttl = 1 - только локальная сеть, >1 - могут выходить за роутер
@@ -71,7 +79,6 @@ void setup_multicast_sender(int sock, int ttl)
         perror("setsockopt IP_MULTICAST_LOOP failed");
         // не фатально, можно продолжить
     }
-
 }
 
 void setup_multicast_receiver(int sock, const char *multicast_addr, int port)
@@ -105,15 +112,41 @@ void setup_multicast_receiver(int sock, const char *multicast_addr, int port)
     }
 }
 
-void create_topik(std::string topik){
-    std::cout << "Create topik: " << topik << std::endl;
+void print_client_t()
+{
+    for (const auto &t : topiks)
+    {
+        std::cout << "name: " << t.name_topik << ", port: " << t.port<< "\n";
+    }
 }
 
-int create_pub(std::string topik)
+void create_topik(std::string topik)
+{
+    
+    Topik t;
+    t.name_topik = topik;
+    t.port = PORT_topik++;
+    topiks.emplace_back(t);
+    print_client_t();
+}
+
+int create_pub()
 {
     int fd = create_udp_socket();
-    create_topik(topik);
     return fd;
+}
+
+int find_topik(std::string topik)
+{
+    for (auto it = topiks.begin(); it != topiks.end(); ++it)
+    {
+        if (it->name_topik == topik)
+        {
+            std::cout << it->name_topik;
+            return true;
+        }
+    }
+    return false;
 }
 
 int create_sub()
@@ -121,8 +154,6 @@ int create_sub()
     int fd = create_udp_socket();
     return fd;
 }
-
-
 
 sockaddr_in settings_server_socket(int server_id, int PORT, int queue)
 {
