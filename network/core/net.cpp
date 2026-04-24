@@ -3,6 +3,8 @@
 #include <cstring>
 #include <unistd.h>
 #include <thread>
+#include <vector>
+#include <mutex>
 #include <chrono>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -43,7 +45,7 @@ void settings_udp_sender(int fd)
         perror("setsockopt IP_MULTICAST_TTL failed");
     }
 
-    u_char loop = 0;
+    u_char loop = 2;
     if (setsockopt(fd, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop)) < 0)
     {
         perror("setsockopt IP_MULTICAST_LOOP failed");
@@ -79,6 +81,7 @@ void setup_multicast_sender(int sock, int ttl)
         perror("setsockopt IP_MULTICAST_LOOP failed");
         // не фатально, можно продолжить
     }
+    
 }
 
 void setup_multicast_receiver(int sock, const char *multicast_addr, int port)
@@ -143,10 +146,10 @@ int find_topik(std::string topik)
         if (it->name_topik == topik)
         {
             std::cout << it->name_topik;
-            return true;
+            return 1;
         }
     }
-    return false;
+    return 0;
 }
 
 int create_sub()

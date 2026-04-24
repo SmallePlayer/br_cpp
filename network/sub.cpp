@@ -1,18 +1,24 @@
 #include "core/net.h"
 
+
+
 int main()
 {
     std::string topik = "info";
-
+    std::string message = " ";
     int sub_h = create_sub();
+    std::cout << "sub_h fd = " << sub_h << std::endl;
     settings_multicast_sub(sub_h);
+    std::cout << "after settings_multicast_sub" << std::endl;
+
+
+    
+    ssize_t bytes = recv_hello(sub_h, message);
+    std::cout << "[" << message << "]" << std::endl;
+
 
     int sub = create_sub();
     settings_udp_sub(sub);
-
-    std::string message = " "; 
-    ssize_t bytes = recv_hello(sub_h, message);
-    std::cout << "[" << message << "]" << std::endl;
     
     if(bytes > 0 && message == topik)
     {

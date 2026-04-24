@@ -44,7 +44,9 @@ void settings_multicast_sub(int sub)
 //------send------
 
 void send_hello(int fd, std::string topik)
-{
+{   
+    std::cout << "SENDING HELLO: " << topik << " to " 
+              << MULTICAST_ADDR << ":" << MULTICAST_PORT << std::endl;
     sendto(fd, topik.data(), topik.size(), 0,
            (struct sockaddr *)&multicast_addr, sizeof(multicast_addr));
 }
@@ -106,10 +108,12 @@ void send_multicast_double(int pub, double data)
 
 
 ssize_t recv_hello(int fd, std::string &msg)
-{
+{   
+    std::cout << "WAITING FOR HELLO on fd=" << fd << std::endl;
     char buffer[256];
     ssize_t received = recvfrom(fd, buffer, sizeof(buffer), 0,
                                 (struct sockaddr *)&client_addr, &client_len);
+    std::cout << "RECEIVED: " << received << " bytes" << std::endl;
 
     if (received > 0)
     {
