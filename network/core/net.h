@@ -28,8 +28,6 @@ enum class RecvStatus
 
 int create_tcp_socket();
 int create_udp_socket();
-void setup_multicast_sender(int sock, int ttl = 1);
-void setup_multicast_receiver(int sock, const char* multicast_addr, int port);
 int create_pub();
 int create_sub();
 sockaddr_in settings_server_socket(int server_number, int PORT, int queue = 5);

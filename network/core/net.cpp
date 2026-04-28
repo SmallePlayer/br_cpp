@@ -53,67 +53,7 @@ void settings_udp_sender(int fd)
     }
 }
 
-// net.cpp (добавить после существующих функций)
 
-void setup_multicast_sender(int sock, int ttl)
-{
-    // create_topik
-
-    /*
-    Создание и отправка первого сообщения топика.
-    потом sub получается первое сообщение проверяет его размер если он совпадает с тем что пришло впервый
-    раз и читает и получает подтверждение топиков.
-    */
-
-    // Устанавливаем TTL (время жизни) для multicast пакетов
-    // ttl = 1 - только локальная сеть, >1 - могут выходить за роутер
-    u_char ttl_val = static_cast<u_char>(ttl);
-    if (setsockopt(sock, IPPROTO_IP, IP_MULTICAST_TTL, &ttl_val, sizeof(ttl_val)) < 0)
-    {
-        perror("setsockopt IP_MULTICAST_TTL failed");
-    }
-
-    // Отключаем loopback, чтобы не получать свои же пакеты (опционально)
-    // Если закомментировать, то отправитель будет слышать сам себя.
-    u_char loop = 0;
-    if (setsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop)) < 0)
-    {
-        perror("setsockopt IP_MULTICAST_LOOP failed");
-        // не фатально, можно продолжить
-    }
-    
-}
-
-void setup_multicast_receiver(int sock, const char *multicast_addr, int port)
-{
-    // 1. Разрешаем переиспользование адреса (SO_REUSEADDR)
-    int reuse = 1;
-    if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0)
-    {
-        perror("setsockopt SO_REUSEADDR failed");
-    }
-
-    // 2. Привязываем сокет к порту
-    struct sockaddr_in local_addr{};
-    local_addr.sin_family = AF_INET;
-    local_addr.sin_port = htons(port);
-    local_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-    if (bind(sock, (struct sockaddr *)&local_addr, sizeof(local_addr)) < 0)
-    {
-        perror("bind multicast receiver failed");
-    }
-
-    // 3. Подписываемся на мультикаст-группу
-    struct ip_mreq mreq{};
-    mreq.imr_multiaddr.s_addr = inet_addr(multicast_addr);
-    mreq.imr_interface.s_addr = htonl(INADDR_ANY); // слушаем на всех интерфейсах
-
-    if (setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0)
-    {
-        perror("setsockopt IP_ADD_MEMBERSHIP failed");
-    }
-}
 
 void print_client_t()
 {

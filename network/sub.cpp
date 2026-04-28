@@ -4,39 +4,7 @@
 
 int main()
 {
-    std::string topik = "info";
-    std::string message = " ";
-    int sub_h = create_sub();
-    std::cout << "sub_h fd = " << sub_h << std::endl;
-    settings_multicast_sub(sub_h);
-    std::cout << "after settings_multicast_sub" << std::endl;
-
-
     
-    ssize_t bytes = recv_hello(sub_h, message);
-    std::cout << "[" << message << "]" << std::endl;
-
-
-    int sub = create_sub();
-    settings_udp_sub(sub);
-    
-    if(bytes > 0 && message == topik)
-    {
-        int data;
-        while (true)
-        {
-            int bytes = recv_int(sub, data);
-            if (bytes > 0)
-            {
-                std::cout << "Received: " << data << std::endl;
-            }
-            else if (bytes < 0)
-            {
-                perror("recvfrom error");
-                break;
-            }
-        }
-    }
 }
 
 /*
