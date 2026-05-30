@@ -32,6 +32,13 @@ add_executable(sub
     network/core/signals.cpp
 )
 
+add_executable(pub_multicast
+    network/pub_multicast.cpp
+)
+add_executable(sub_multicast
+    network/sub_multicast.cpp
+)
+
 add_executable(tcp_server
     network/tcp_server.cpp
     network/core/net.cpp

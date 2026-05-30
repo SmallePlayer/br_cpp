@@ -19,8 +19,8 @@ int main() {
     int y_self{3};
 
     //target xy
-    int x_target{400};
-    int y_target{200};
+    int x_target{500};
+    int y_target{630};
 
     // текущие координаты
     int current_x{0};

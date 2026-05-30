@@ -37,6 +37,46 @@ int create_udp_socket()
     return socket_id;
 }
 
+void ssm(int sock){
+    // Разрешаем повторное использование адреса (важно для нескольких слушателей)
+    int reuse = 1;
+    if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
+        std::cerr << "Ошибка SO_REUSEADDR\n";
+        close(sock);
+    }
+
+    // Привязываемся к порту
+    struct sockaddr_in local_addr;
+    std::memset(&local_addr, 0, sizeof(local_addr));
+    local_addr.sin_family = AF_INET;
+    local_addr.sin_addr.s_addr = INADDR_ANY; // Слушаем все интерфейсы
+    local_addr.sin_port = htons(12345);
+
+    if (bind(sock, (struct sockaddr*)&local_addr, sizeof(local_addr)) < 0) {
+        std::cerr << "Ошибка bind\n";
+        close(sock);
+    }
+
+    // Присоединяемся к multicast-группе
+    struct ip_mreq group;
+    group.imr_multiaddr.s_addr = inet_addr("239.255.0.1"); // Адрес группы
+    group.imr_interface.s_addr = INADDR_ANY;               // Локальный интерфейс
+    
+    if (setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, &group, sizeof(group)) < 0) {
+        std::cerr << "Ошибка добавления в группу\n";
+        close(sock);
+    }
+}
+
+struct sockaddr_in spm(){
+    struct sockaddr_in group_addr;
+    std::memset(&group_addr, 0, sizeof(group_addr));
+    group_addr.sin_family = AF_INET;
+    group_addr.sin_addr.s_addr = inet_addr("239.255.0.1"); // Адрес группы
+    group_addr.sin_port = htons(12345);  
+    return group_addr;                
+}
+
 void settings_udp_sender(int fd)
 {
     u_char ttl_val = static_cast<int>(2);

@@ -4,7 +4,21 @@
 
 int main()
 {
-    
+    int sock = create_sub();
+    if (sock < 0) {
+        std::cerr << "Ошибка создания сокета\n";
+        return 1;
+    }
+
+    ssm(sock);
+
+    int value{0};
+    while (true) {
+        recv_int_m(sock, value);
+    }
+
+    close(sock);
+    return 0;
 }
 
 /*

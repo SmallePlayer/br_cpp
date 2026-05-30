@@ -6,7 +6,28 @@
 
 int main()
 {
+    int sock = create_pub();
+    if (sock < 0) {
+        std::cerr << "Ошибка создания сокета\n";
+        return 1;
+    }
 
+    // Настройка адреса multicast-группы
+    struct sockaddr_in group_addr = spm();                    // Порт
+
+    int value{0};
+    while (true) {
+        // Отправляем int в сетевом порядке байт
+        send_int_m(sock, value, group_addr);
+
+        std::cout << value << std::endl;
+        
+        value++;
+        delay_seconds(1);
+    }
+
+    close(sock);
+    return 0;
 }
 
 /*
