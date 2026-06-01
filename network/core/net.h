@@ -8,8 +8,13 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "signals.hpp"
-#include "config.hpp"
 #include "send_recv.h"
+
+constexpr const char* HOST = "127.0.0.1";
+constexpr int PORT = 8080; 
+
+constexpr const char* MULTICAST_ADDR = "239.1.2.3";
+constexpr int MULTICAST_PORT = 50001;
 
 extern int socket_id_global;
 

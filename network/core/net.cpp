@@ -11,7 +11,6 @@
 #include <arpa/inet.h>
 #include "net.h"
 #include "signals.hpp"
-#include "config.hpp"
 #include "send_recv.h"
 
 int PORT_topik = 50000;
