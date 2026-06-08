@@ -12,6 +12,7 @@
 #include "net.h"
 #include "signals.hpp"
 #include "send_recv.h"
+#include "core/json.hpp" 
 
 int PORT_topik = 50000;
 
@@ -36,7 +37,7 @@ int create_udp_socket()
     return socket_id;
 }
 
-void ssm(int sock){
+void ssm(int sock){ // settings_send_multicast
     // Разрешаем повторное использование адреса (важно для нескольких слушателей)
     int reuse = 1;
     if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
@@ -67,7 +68,7 @@ void ssm(int sock){
     }
 }
 
-struct sockaddr_in spm(){
+struct sockaddr_in spm(){  // settings_send_multicast
     struct sockaddr_in group_addr;
     std::memset(&group_addr, 0, sizeof(group_addr));
     group_addr.sin_family = AF_INET;

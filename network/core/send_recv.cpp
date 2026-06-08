@@ -1,6 +1,9 @@
 #include "net.h"
+#include "core/json.hpp" 
+
 
 //------settings------
+using json = nlohmann::json;
 
 sockaddr_in server_addr{};
 static sockaddr_in multicast_addr{};
@@ -29,6 +32,13 @@ void settings_udp_sub(int sub)
 }
 
 //------send------
+
+void send_json(int pub, const json& data) {
+    std::string serialized = data.dump();
+    uint32_t size = htonl(serialized.size());
+    send(pub, &size, sizeof(size), 0);
+    send(pub, serialized.data(), serialized.size(), 0);
+}
 
 void send_int(int pub, int &data)
 {
@@ -85,6 +95,22 @@ void send_double_m(int sock, double value, struct sockaddr_in group_addr)
 }
 
 //-----recv------
+
+json recv_json(int sub) {
+    uint32_t size;
+    read(sub, &size, sizeof(size));
+    size = ntohl(size);
+    
+    std::string buf(size, '\0');
+    size_t total = 0;
+    while (total < size) {
+        ssize_t n = read(sub, buf.data() + total, size - total);
+        if (n <= 0) break;
+        total += n;
+    }
+    
+    return json::parse(buf);
+}
 
 int recv_int(int fd, int &data)
 {

@@ -1,5 +1,7 @@
 #include "core/net.h"
+#include "core/json.hpp" 
 
+using json = nlohmann::json;
 
 
 int main()
@@ -11,6 +13,13 @@ int main()
     }
 
     ssm(sock);
+
+    json msg;
+    msg["role"] = "pub";
+    msg["topic"] = "info";
+    msg["value"] = 42;
+    msg["active"] = true;
+
 
     int value{0};
     while (true) {

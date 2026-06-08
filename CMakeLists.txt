@@ -10,6 +10,9 @@ find_package(Threads REQUIRED)
 include_directories(camera logick network)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
+set(CMAKE_PREFIX_PATH "/opt/homebrew")
+find_package(raylib REQUIRED)
+
 
 add_executable(broker
     network/core/broker.cpp
@@ -85,6 +88,18 @@ add_executable(algoritm
     logick/brezenhem.cpp
     logick/a_star.cpp
 )
+
+
+add_executable(robot_sim
+    simulation/main.cpp
+    )
+add_executable(fizika
+    simulation/fis.cpp
+)
+
+target_link_libraries(robot_sim raylib)
+target_link_libraries(fizika raylib)
+
 
 
 target_link_libraries(tcp_server PRIVATE Threads::Threads)
