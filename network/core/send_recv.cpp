@@ -1,4 +1,5 @@
 #include "net.h"
+#include "send_recv.h"
 #include "core/json.hpp" 
 
 
@@ -40,7 +41,7 @@ void send_json(int pub, const json& data) {
     send(pub, serialized.data(), serialized.size(), 0);
 }
 
-void send_int(int pub, int &data)
+void send_udp_int(int pub, int &data)
 {
     ssize_t byte_sent = sendto(
         pub,
@@ -51,7 +52,7 @@ void send_int(int pub, int &data)
         sizeof(server_addr));
 }
 
-void send_float(int pub, float &data)
+void send_udp_float(int pub, float &data)
 {
     ssize_t byte_sent = sendto(
         pub,
@@ -61,8 +62,21 @@ void send_float(int pub, float &data)
         (sockaddr *)&server_addr,
         sizeof(server_addr));
 }
+void send_tcp_int(int pub, int &data)
+{
+    ssize_t byte_sent = send(pub, &data, sizeof(data), 0);
+}
+void send_tcp_float(int pub, float &data)
+{
+    ssize_t byte_sent = send(pub, &data, sizeof(data), 0);
+}
 
-void send_double(int pub, double &data)
+void send_tcp_double(int pub, double &data)
+{
+    ssize_t byte_sent = send(pub, &data, sizeof(data), 0);
+}
+
+void send_udp_double(int pub, double &data)
 {
     ssize_t byte_sent = sendto(
         pub,
@@ -112,7 +126,26 @@ json recv_json(int sub) {
     return json::parse(buf);
 }
 
-int recv_int(int fd, int &data)
+int recv_tcp_int(int fd, int &data)
+{
+    ssize_t bytes_received = recv(fd, &data, sizeof(data), 0);
+    return bytes_received;
+}
+
+float recv_tcp_float(int fd, float &data)
+{
+    ssize_t bytes_received = recv(fd, &data, sizeof(data), 0);
+    return bytes_received;
+}
+
+double recv_tcp_double(int fd, double &data)
+{
+    ssize_t bytes_received = recv(fd, &data, sizeof(data), 0);
+    return bytes_received;
+}
+
+
+int recv_udp_int(int fd, int &data)
 {
     ssize_t bytes_received = recvfrom(
         fd,
@@ -124,7 +157,7 @@ int recv_int(int fd, int &data)
     return bytes_received;
 }
 
-float recv_float(int fd, float &data)
+float recv_udp_float(int fd, float &data)
 {
     ssize_t bytes_received = recvfrom(
         fd,
@@ -136,7 +169,7 @@ float recv_float(int fd, float &data)
     return bytes_received;
 }
 
-double recv_double(int fd, double &data)
+double recv_udp_double(int fd, double &data)
 {
     ssize_t bytes_received = recvfrom(
         fd,

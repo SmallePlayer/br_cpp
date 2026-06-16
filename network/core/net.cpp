@@ -14,30 +14,27 @@
 #include "send_recv.h"
 #include "core/json.hpp" 
 
-int PORT_topik = 50000;
+
 
 int socket_id_global = -1;
 
-struct Topik
-{
-    std::string name_topik;
-    int port;
-};
-std::vector<Topik> topiks;
 
+// Создание сокета TCP
 int create_tcp_socket()
 {
     int socket_id = socket(AF_INET, SOCK_STREAM, 0);
     return socket_id;
 }
 
+// Создание сокета UDP
 int create_udp_socket()
 {
     int socket_id = socket(AF_INET, SOCK_DGRAM, 0);
     return socket_id;
 }
 
-void ssm(int sock){ // settings_send_multicast
+// settings_send_multicast
+void ssm(int sock){ 
     // Разрешаем повторное использование адреса (важно для нескольких слушателей)
     int reuse = 1;
     if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
@@ -68,7 +65,8 @@ void ssm(int sock){ // settings_send_multicast
     }
 }
 
-struct sockaddr_in spm(){  // settings_send_multicast
+// settings_send_multicast
+struct sockaddr_in spm(){  
     struct sockaddr_in group_addr;
     std::memset(&group_addr, 0, sizeof(group_addr));
     group_addr.sin_family = AF_INET;
@@ -77,6 +75,7 @@ struct sockaddr_in spm(){  // settings_send_multicast
     return group_addr;                
 }
 
+// Настройки отправителя UDP
 void settings_udp_sender(int fd)
 {
     u_char ttl_val = static_cast<int>(2);
@@ -95,50 +94,7 @@ void settings_udp_sender(int fd)
 
 
 
-void print_client_t()
-{
-    for (const auto &t : topiks)
-    {
-        std::cout << "name: " << t.name_topik << ", port: " << t.port<< "\n";
-    }
-}
-
-void create_topik(std::string topik)
-{
-    
-    Topik t;
-    t.name_topik = topik;
-    t.port = PORT_topik++;
-    topiks.emplace_back(t);
-    print_client_t();
-}
-
-int create_pub()
-{
-    int fd = create_udp_socket();
-    return fd;
-}
-
-int find_topik(std::string topik)
-{
-    for (auto it = topiks.begin(); it != topiks.end(); ++it)
-    {
-        if (it->name_topik == topik)
-        {
-            std::cout << it->name_topik;
-            return 1;
-        }
-    }
-    return 0;
-}
-
-int create_sub()
-{
-    int fd = create_udp_socket();
-    return fd;
-}
-
-sockaddr_in settings_server_socket(int server_id, int PORT, int queue)
+sockaddr_in settings_server_Tsocket(int server_id, int PORT, int queue)
 {
     uint8_t opt = 1;
     sockaddr_in address{};
@@ -152,7 +108,7 @@ sockaddr_in settings_server_socket(int server_id, int PORT, int queue)
     return address;
 }
 
-sockaddr_in settings_client_socket(int server_id, char *HOST, int PORT)
+sockaddr_in settings_client_Tsocket(int server_id, char *HOST, int PORT)
 {
     sockaddr_in server_addres;
     server_addres.sin_family = AF_INET;
@@ -166,7 +122,7 @@ void connect_server(int socket_id, sockaddr_in server_addres)
     connect(socket_id, (sockaddr *)&server_addres, sizeof(server_addres));
 }
 
-int accpet_client(int server_number)
+int accept_client(int server_number)
 {
     sockaddr_in client_addr{};
     socklen_t client_len = sizeof(client_addr);
@@ -185,48 +141,4 @@ void on_exit(int sig)
     exit(0);
 }
 
-int create_publisher(std::string current_topik)
-{
-    setup_signal_handlers();
-    ClientHello sub;
-    sub.role = "pub";
-    sub.topik = current_topik;
-    auto socket_id = create_tcp_socket();
-    sockaddr_in server_addres = settings_client_socket(socket_id, (char *)HOST, PORT);
-    connect_server(socket_id, server_addres);
 
-    std::cout << "Connected to server!\n";
-    send_data(socket_id, sub);
-    return socket_id;
-}
-
-int create_subscriber(std::string current_topik)
-{
-    ClientHello sub;
-    sub.role = "sub";
-    sub.topik = current_topik;
-
-    int socket_id = create_tcp_socket();
-    sockaddr_in server_addres = settings_client_socket(socket_id, (char *)HOST, PORT);
-    connect_server(socket_id, server_addres);
-
-    std::cout << "Connected to server!\n";
-    send_data(socket_id, sub);
-    return socket_id;
-}
-
-int check_disconnect(RecvStatus status, int sub)
-{
-    if (status == RecvStatus::DISCONNECTED)
-    {
-        std::cout << "Брокер отключился\n";
-        close(sub);
-        return -1;
-    }
-    if (status == RecvStatus::ERROR)
-    {
-        std::cerr << "Ошибка приёма данных\n";
-        return -1;
-    }
-    return 0;
-}
